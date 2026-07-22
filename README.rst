@@ -2,18 +2,6 @@
 
 |
 
-.. image:: https://github.com/nsidnev/fastapi-realworld-example-app/workflows/API%20spec/badge.svg
-   :target: https://github.com/nsidnev/fastapi-realworld-example-app
-
-.. image:: https://github.com/nsidnev/fastapi-realworld-example-app/workflows/Tests/badge.svg
-   :target: https://github.com/nsidnev/fastapi-realworld-example-app
-
-.. image:: https://github.com/nsidnev/fastapi-realworld-example-app/workflows/Styles/badge.svg
-   :target: https://github.com/nsidnev/fastapi-realworld-example-app
-
-.. image:: https://codecov.io/gh/nsidnev/fastapi-realworld-example-app/branch/master/graph/badge.svg
-   :target: https://codecov.io/gh/nsidnev/fastapi-realworld-example-app
-
 .. image:: https://img.shields.io/github/license/Naereen/StrapDown.js.svg
    :target: https://github.com/nsidnev/fastapi-realworld-example-app/blob/master/LICENSE
 

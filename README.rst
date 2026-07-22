@@ -29,6 +29,9 @@
 
 More modern and relevant examples can be found in other repositories with ``fastapi`` tag on GitHub.
 
+Infrastructure for this project is under https://github.com/TurboBee77/fastapi-devops-infra 
+
+
 Quickstart
 ----------
 

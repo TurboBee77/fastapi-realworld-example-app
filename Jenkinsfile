@@ -23,7 +23,8 @@ pipeline {
             steps {
                 script {
                     def shortSha = env.GIT_COMMIT.take(7)
-                    def tag = "${env.BRANCH_NAME}-${shortSha}"
+                    def safeBranch = env.BRANCH_NAME.replaceAll('/', '-')
+                    def tag = "${safeBranch}-${shortSha}"
                     def img = docker.build("${IMAGE_NAME}:${tag}")
 
                     docker.withRegistry('https://registry.hub.docker.com', DOCKERHUB_CREDENTIALS) {

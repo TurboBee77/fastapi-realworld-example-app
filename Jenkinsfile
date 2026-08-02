@@ -4,6 +4,7 @@ pipeline {
     environment {
         DOCKERHUB_CREDENTIALS = 'dockerhub-credentials'
         IMAGE_NAME = 'turbobee/fastapi-realworld-example-app'
+        INFRA_REPO = 'https://github.com/TurboBee77/fastapi-devops-infra.git'
     }
 
     stages {
@@ -24,8 +25,8 @@ pipeline {
                 script {
                     def shortSha = env.GIT_COMMIT.take(7)
                     def safeBranch = env.BRANCH_NAME.replaceAll('/', '-')
-                    def tag = "${safeBranch}-${shortSha}"
-                    def img = docker.build("${IMAGE_NAME}:${tag}")
+                    env.IMAGE_TAG = "${safeBranch}-${shortSha}"
+                    def img = docker.build("${IMAGE_NAME}:${env.IMAGE_TAG}")
 
                     docker.withRegistry('https://registry.hub.docker.com', DOCKERHUB_CREDENTIALS) {
                         img.push()
@@ -34,6 +35,57 @@ pipeline {
                         }
                     }
                 }
+            }
+        }
+
+        stage('Deploy') {
+            when { branch 'master' }
+            steps {
+                withCredentials([
+                    sshUserPrivateKey(credentialsId: 'ssh_cd_key', keyFileVariable: 'SSH_KEY'),
+                    string(credentialsId: 'ansible-vault-password', variable: 'VAULT_PASS')
+                ]) {
+                    sh '''
+                        set -e
+
+                        rm -rf infra
+                        git clone --depth 1 "$INFRA_REPO" infra
+                        cd infra/ansible
+                        trap 'rm -f .vault_pass.txt' EXIT
+
+                        APP_HOST=$(cat /run/secrets/app_host_ip)
+                        printf '[app]\\n%s ansible_user=ubuntu\\n' "$APP_HOST" > inventory_cd.ini
+
+                        echo "$VAULT_PASS" > .vault_pass.txt
+                        chmod 600 .vault_pass.txt
+
+                        ansible-playbook -i inventory_cd.ini site.yml --limit app \\
+                            --private-key="$SSH_KEY" \\
+                            --vault-password-file=.vault_pass.txt \\
+                            --extra-vars "app_image_tag=$IMAGE_TAG"
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            withCredentials([string(credentialsId: 'discord-webhook-url', variable: 'DISCORD_WEBHOOK')]) {
+                sh '''
+                    curl -s -H "Content-Type: application/json" \\
+                        -d "{\\"content\\": \\"✅ Build #${BUILD_NUMBER} (${BRANCH_NAME}) zakonczony sukcesem: ${BUILD_URL}\\"}" \\
+                        "$DISCORD_WEBHOOK"
+                '''
+            }
+        }
+        failure {
+            withCredentials([string(credentialsId: 'discord-webhook-url', variable: 'DISCORD_WEBHOOK')]) {
+                sh '''
+                    curl -s -H "Content-Type: application/json" \\
+                        -d "{\\"content\\": \\"❌ Build #${BUILD_NUMBER} (${BRANCH_NAME}) zakonczony bledem: ${BUILD_URL}\\"}" \\
+                        "$DISCORD_WEBHOOK"
+                '''
             }
         }
     }

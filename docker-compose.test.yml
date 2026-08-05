@@ -19,5 +19,5 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    command: sh -c "poetry run alembic upgrade head && poetry run pytest"
+    command: sh -c "poetry run alembic upgrade head && poetry run pytest --junitxml=/app/test-results/junit.xml"
 

@@ -15,6 +15,7 @@ pipeline {
             }
             post {
                 always {
+                    junit 'test-results/junit.xml'
                     sh "docker compose -f docker-compose.test.yml -p ci-${env.BUILD_NUMBER} down -v --rmi local"
                 }
             }

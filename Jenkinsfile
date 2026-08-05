@@ -15,7 +15,8 @@ pipeline {
             }
             post {
                 always {
-                    junit 'test-results/junit.xml'
+                    sh "docker compose -f docker-compose.test.yml -p ci-${env.BUILD_NUMBER} cp test:/app/test-results/junit.xml test-results/junit.xml || true"
+                    junit testResults: 'test-results/junit.xml', allowEmptyResults: true
                     sh "docker compose -f docker-compose.test.yml -p ci-${env.BUILD_NUMBER} down -v --rmi local"
                 }
             }

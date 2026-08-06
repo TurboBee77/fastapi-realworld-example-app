@@ -10,6 +10,9 @@ pipeline {
     stages {
 
         stage('Test') {
+            options {
+               timeout(time: 15, unit: 'MINUTES')
+            }
             steps {
                 sh "docker compose -f docker-compose.test.yml -p ci-${env.BUILD_NUMBER} up --build --abort-on-container-exit --exit-code-from test"
             }
@@ -24,6 +27,9 @@ pipeline {
         }
 
         stage('Build & Push production image') {
+            options {
+               timeout(time: 15, unit: 'MINUTES')
+            }
             steps {
                 script {
                     def shortSha = env.GIT_COMMIT.take(7)
@@ -43,6 +49,9 @@ pipeline {
 
         stage('Deploy') {
             when { branch 'master' }
+            options {
+               timeout(time: 10, unit: 'MINUTES')
+            }
             steps {
                 withCredentials([
                     sshUserPrivateKey(credentialsId: 'ssh_cd_key', keyFileVariable: 'SSH_KEY'),

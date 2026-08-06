@@ -36,3 +36,6 @@ nie przemianowana. `when { branch 'master' }` w `Jenkinsfile` jest celowe.
 Terraform, Ansible, konfiguracja Jenkinsa i monitoringu żyją w osobnym
 repozytorium: [`fastapi-devops-infra`](https://github.com/TurboBee77/fastapi-devops-infra)
 — tam pełna instrukcja postawienia całości od zera.
+
+
+#komentarz testowy

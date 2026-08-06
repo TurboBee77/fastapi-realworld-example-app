@@ -14,14 +14,14 @@ pipeline {
                timeout(time: 15, unit: 'MINUTES')
             }
             steps {
-                sh "docker compose -f docker-compose.test.yml -p ci-${env.BUILD_NUMBER} up --build --abort-on-container-exit --exit-code-from test"
+                sh "docker compose -f docker-compose.test.yml -p ci-${env.BRANCH_NAME.replaceAll('/', '-')}-${env.BUILD_NUMBER} up --build --abort-on-container-exit --exit-code-from test"
             }
             post {
                 always {
                     sh "mkdir -p test-results"
-                    sh "docker compose -f docker-compose.test.yml -p ci-${env.BUILD_NUMBER} cp test:/app/test-results/junit.xml test-results/junit.xml || true"
+                    sh "docker compose -f docker-compose.test.yml -p ci-${env.BRANCH_NAME.replaceAll('/', '-')}-${env.BUILD_NUMBER} cp test:/app/test-results/junit.xml test-results/junit.xml || true"
                     junit testResults: 'test-results/junit.xml', allowEmptyResults: true
-                    sh "docker compose -f docker-compose.test.yml -p ci-${env.BUILD_NUMBER} down -v --rmi local"
+                    sh "docker compose -f docker-compose.test.yml -p ci-${env.BRANCH_NAME.replaceAll('/', '-')}-${env.BUILD_NUMBER} down -v --rmi local"
                 }
             }
         }

@@ -79,7 +79,7 @@ pipeline {
                         ansible-playbook -i inventory_cd.ini site.yml --limit app \\
                             --private-key="$SSH_KEY" \\
                             --vault-password-file=.vault_pass.txt \\
-                            --extra-vars "app_image_tag=$IMAGE_TAG manage_cd_key=false"
+                            --extra-vars "app_image_tag=$IMAGE_TAG full_provisioning_run=false"
                     '''
                 }
             }

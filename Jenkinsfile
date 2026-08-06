@@ -48,7 +48,12 @@ pipeline {
         }
 
         stage('Deploy') {
-            when { branch 'master' }
+            when {
+                allOf {
+                    branch 'master'
+                    not { triggeredBy 'BranchIndexingCause' }
+                }
+            }
             options {
                timeout(time: 10, unit: 'MINUTES')
             }
